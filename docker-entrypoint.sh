@@ -3,5 +3,5 @@
 : ${ZNCDIR:=/var/lib/znc}
 
 chown -R znc:znc $ZNCDIR
-exec runuser -u znc -- znc -d $ZNCDIR "$@"
+exec su-exec znc znc -d $ZNCDIR "$@"
 

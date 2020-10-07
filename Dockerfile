@@ -1,26 +1,26 @@
-FROM fedora:30 AS build-push
+FROM alpine:3.12 AS build-push
 
-RUN dnf -y install \
+RUN apk --update add \
 	git \
-	libcurl-devel \
-	zlib-devel \
-	znc \
-	znc-devel \
-	@development-tools
+	build-base \
+	znc-dev \
+	icu-dev \
+	openssl-dev \
+	curl-dev
 
 RUN git clone https://github.com/jreese/znc-push /tmp/znc-push
 RUN cd /tmp/znc-push && make curl=yes
 
-FROM fedora:30
+FROM alpine:3.12
 
 VOLUME /var/lib/znc
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["-nf"]
 
-RUN dnf -y install \
+RUN apk add --update \
+	su-exec \
 	znc \
-	znc-modpython \
-	; dnf clean all
+	znc-modpython
 
-COPY --from=build-push /tmp/znc-push/push.so /usr/lib64/znc/push.so
-COPY entrypoint.sh /entrypoint.sh
+COPY --from=build-push /tmp/znc-push/push.so /usr/lib/znc/push.so
+COPY docker-entrypoint.sh /docker-entrypoint.sh
