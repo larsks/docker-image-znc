@@ -18,6 +18,7 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["-nf"]
 
 RUN apk add --update \
+	curl \
 	su-exec \
 	znc \
 	znc-modpython
