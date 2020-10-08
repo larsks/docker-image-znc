@@ -1,3 +1,9 @@
+This is ZNC 1.8.1, including the [push][] plugin.
+
+[push]: https://github.com/jreese/znc-push
+
+## Configuration
+
 To configure ZNC, first run the container with the `--makeconf`
 option:
 
