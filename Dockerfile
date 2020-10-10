@@ -1,4 +1,4 @@
-FROM alpine:3.12 AS build-push
+FROM znc:1.8.2-slim AS build-push
 
 RUN apk --update add \
 	git \
@@ -11,17 +11,8 @@ RUN apk --update add \
 RUN git clone https://github.com/jreese/znc-push /tmp/znc-push
 RUN cd /tmp/znc-push && make curl=yes
 
-FROM alpine:3.12
-
-VOLUME /var/lib/znc
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["-nf"]
-
-RUN apk add --update \
-	curl \
-	su-exec \
-	znc \
-	znc-modpython
+FROM znc:1.8.2-slim
 
 COPY --from=build-push /tmp/znc-push/push.so /usr/lib/znc/push.so
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY znc.conf /opt/znc/share/znc/znc.conf.default
+COPY 40-default-config.sh /startup-sequence/

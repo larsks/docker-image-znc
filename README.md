@@ -4,12 +4,15 @@ This is ZNC 1.8.1, including the [push][] plugin.
 
 ## Configuration
 
-To configure ZNC, first run the container with the `--makeconf`
-option:
+ZNC will look for its configuration in `/znc-data/configs/znc.conf`. If
+this file does not exist, the image will install a configuration file with
+the following defaults:
 
-    docker run --rm -it -v volume_name:/var/lib/znc larsks/znc --makeconf
-
-And then afterwards start it using the same volume mounted on
-`/var/lib/znc`, making sure to publish any configured ports:
-
-    docker run --name znc -v volume_name:/var/lib/znc -p 8443:8443 larsks/znc
+```
+Port: 8443
+User: admin
+Pass: admin
+IPv4: true
+IPv6: true
+SSL: true (using a self-signed certificate)
+```
