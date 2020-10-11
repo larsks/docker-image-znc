@@ -1,24 +1,31 @@
-FROM znc:1.8.2-slim AS build-push
+FROM fedora:33 AS build-push
 
-RUN apk --update add \
+RUN yum -y install \
+	@development-tools \
+	znc \
+	znc-devel
+RUN yum -y install \
 	git \
-	build-base \
-	icu-dev \
-	openssl-dev \
-	curl-dev \
+	libicu-devel \
+	openssl-devel \
+	curl-devel \
 	cmake
 
+RUN yum -y install \
+	zlib-devel
+
 RUN git clone https://github.com/jreese/znc-push /tmp/znc-push
-RUN cd /tmp/znc-push && \
-	PATH=/opt/znc/bin:/usr/bin make curl=yes
+RUN cd /tmp/znc-push && make curl=yes
 
-FROM znc:1.8.2-slim
+FROM fedora:33
 
-RUN apk --update add \
+RUN yum -y install \
+	znc \
 	curl
 
-COPY --from=build-push /tmp/znc-push/push.so /opt/znc/lib64/znc/
-COPY znc.conf /opt/znc/share/znc/znc.conf.default
-COPY 40-default-config.sh /startup-sequence/
+COPY --from=build-push /tmp/znc-push/push.so /usr/lib64/znc/
+COPY znc.conf /usr/share/znc/znc.conf.default
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 USER znc
